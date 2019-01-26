@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# main.py
+# uploader.py
 # Copyright (C) 2019 KunoiSayami
 #
 # This module is part of gdrive-folder-uploader and is released under
