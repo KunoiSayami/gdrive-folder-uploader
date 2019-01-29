@@ -28,6 +28,7 @@ class uploader(object):
 		self.upload_comand = [self.exec_name, 'upload' , '--no-progress', self.file_name]
 		self.retries = 0
 		self.msg = ''
+		self.init_rewrite()
 	def upload(self):
 		# disable show progress prevert some unexcept memory error
 		while True:
@@ -40,7 +41,7 @@ class uploader(object):
 		if 'Error' in output_info:
 			self.retries += 1
 			if self.retries > 3: self.retries = 5
-			time.sleep(6000 * self.retries)
+			time.sleep(60 * self.retries)
 			return False
 			#self.upload()
 		self.custom_rewrite(output_info)
@@ -54,6 +55,8 @@ class uploader(object):
 					return line
 	def custom_rewrite(self, output_info: str):
 		pass
+	def init_rewrite(self):
+		pass
 
 class uploader_within_folder(uploader):
 	def __init__(self, file_name: str, folder_id: str, callback: callable = None, exec_name: str = 'gdrive'):
@@ -62,12 +65,21 @@ class uploader_within_folder(uploader):
 		self.upload_comand.insert(2, folder_id)
 		self.upload_comand.insert(2, '-p')
 
-class create_folder(uploader):
+class create_folder(uploader_within_folder, uploader):
 	def __init__(self, folder_name: str, super_folder_id: str = '', callback: callable = None, exec_name: str = 'gdrive'):
-		if super_folder_id != '':
+		if super_folder_id == '':
 			uploader.__init__(self, folder_name, callback, exec_name)
 		else:
-			uploader_folder.__init__(self, folder_name, super_folder_id, callback, exec_name)
+			uploader_within_folder.__init__(self, folder_name, super_folder_id, callback, exec_name)
+	def init_rewrite(self):
 		self.upload_comand[1] = 'mkdir'
+		self.upload_comand.remove('--no-progress')
 	def custom_rewrite(self, output_info: str):
 		self.msg = output_info.split()[1]
+
+class delete_file(uploader):
+	def __init__(self, file_name: str, callback: callable = None, exec_name: str = 'gdrive'):
+		uploader.__init__(self, file_name, callback, exec_name)
+	def init_rewrite(self):
+		self.upload_comand[1] = 'delete'
+		self.upload_comand.remove('--no-progress')

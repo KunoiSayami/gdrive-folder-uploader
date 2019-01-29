@@ -20,14 +20,18 @@
 import uploader
 import os
 import sys
+import time
+
+def printl(_msg: str):
+	print('[{}] {}'.format(time.strftime('%Y-%m-%d %H:%M:%S'), _msg))
 
 def check_and_upload(path: str):
 	if not os.path.exists(path):
 		raise FileNotFoundError(path)
-	if os.path.isdir(s):
-		uploader.upload_folder(s)
+	if os.path.isdir(path):
+		uploader.upload_folder(path, callback=printl).activity()
 	else:
-		uploader.upload_file(s)
+		uploader.upload_file(path, callback=printl).activity()
 
 if __name__ == "__main__":
 	if len(sys.argv) == 1:

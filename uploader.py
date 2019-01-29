@@ -20,9 +20,21 @@
 import subtask
 import os
 
+class upload_file(object):
+	def __init__(self, file_name: str, super_folder_id: str = '', callback: callable = None, exec_name: str = 'gdrive'):
+		self.file_name = file_name
+		self.super_folder_id = super_folder_id
+		self.callback = callback
+		self.exec_name = exec_name
+	def activity(self):
+		if self.super_folder_id != '':
+			subtask.uploader(self.file_name, self.callback, self.exec_name)
+		else:
+			subtask.uploader_within_folder(self.file_name, self.super_folder_id, self.callback, self.exec_name)
+
 class upload_folder(upload_file):
 	def __init__(self, folder_name: str, super_folder_id: str = '', callback: callable = None, exec_name: str = 'gdrive'):
-		upload_file.__init__(folder_name, super_folder_id, callback, exec_name)
+		upload_file.__init__(self, folder_name, super_folder_id, callback, exec_name)
 		self.folder_name = folder_name
 	def uploader(self, folder_name: str, super_folder_id: str = '', callback: callable = None, exec_name: str = 'gdrive'):
 		os.chdir(folder_name)
@@ -37,15 +49,3 @@ class upload_folder(upload_file):
 		os.chdir('..')
 	def activity(self):
 		self.uploader(self.folder_name, self.super_folder_id, self.callback, self.exec_name)
-
-class upload_file(object):
-	def __init__(self, folder_name: str, super_folder_id: str = '', callback: callable = None, exec_name: str = 'gdrive'):
-		self.folder_name = folder_name
-		self.super_folder_id = super_folder_id
-		self.callback = callback
-		self.exec_name = exec_name
-	def activity(self):
-		if self.super_folder_id != '':
-			subtask.uploader(self.file_name, callback, exec_name)
-		else:
-			subtask.uploader_within_folder(self.file_name, self.super_folder_id, self.callback, self.exec_name)
